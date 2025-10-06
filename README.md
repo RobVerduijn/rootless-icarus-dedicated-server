@@ -2,55 +2,65 @@
 
 - [Rootless Icarus Dedicated Server](#rootless-icarus-dedicated-server)
   - [Preamble](#preamble)
-  - [Build Requires](#build-requires)
-    - [READ UP ON PODMAN](#read-up-on-podman)
-  - [Build Container](#build-container)
-  - [Container requirements](#container-requirements)
-    - [Create a regular user](#create-a-regular-user)
-    - [Created persistend storage folders](#created-persistend-storage-folders)
-    - [Podman unshare](#podman-unshare)
-  - [Manual container stopping and starting](#manual-container-stopping-and-starting)
-    - [Starting with podman compose](#starting-with-podman-compose)
-    - [Stopping with podman compose](#stopping-with-podman-compose)
-  - [Automatic container stopping and starting](#automatic-container-stopping-and-starting)
-    - [Add unit file](#add-unit-file)
-    - [Update the systemd unit files](#update-the-systemd-unit-files)
-    - [Enable the unit file](#enable-the-unit-file)
-  - [Enable linger](#enable-linger)
-    - [Disable linger](#disable-linger)
-    - [Manual start the container](#manual-start-the-container)
-  - [Check the container logs](#check-the-container-logs)
-    - [Icarus Logs](#icarus-logs)
-  - [Commands you might also use](#commands-you-might-also-use)
-    - [Stopping the container](#stopping-the-container)
-    - [Security hardened user option](#security-hardened-user-option)
-  - [Backing up your prospect(s)](#backing-up-your-prospects)
-  - [Restoring](#restoring)
-  - [Container Environment Variables](#container-environment-variables)
-    - [Container Options](#container-options)
-    - [Icarus Dedicated Server Options](#icarus-dedicated-server-options)
+  - [Building a container](#building-a-container)
+    - [Build Requires](#build-requires)
+      - [READ UP ON PODMAN](#read-up-on-podman)
+    - [Build Container](#build-container)
+  - [Running the rootless container](#running-the-rootless-container)
+    - [Container requirements](#container-requirements)
+      - [Create a regular user](#create-a-regular-user)
+      - [Created persistend storage folders](#created-persistend-storage-folders)
+      - [Podman unshare](#podman-unshare)
+    - [Manual container stopping and starting](#manual-container-stopping-and-starting)
+      - [Starting with podman compose](#starting-with-podman-compose)
+      - [Stopping with podman compose](#stopping-with-podman-compose)
+    - [Automatic container stopping and starting](#automatic-container-stopping-and-starting)
+      - [Add unit file](#add-unit-file)
+      - [Update the systemd unit files](#update-the-systemd-unit-files)
+      - [Enable the unit file](#enable-the-unit-file)
+    - [Enable linger](#enable-linger)
+      - [Disable linger](#disable-linger)
+      - [Manual start the container](#manual-start-the-container)
+    - [Check the container logs](#check-the-container-logs)
+      - [Icarus Logs](#icarus-logs)
+    - [Commands you might also use](#commands-you-might-also-use)
+      - [Stopping the container](#stopping-the-container)
+      - [Security hardened user option](#security-hardened-user-option)
+    - [Backing up your prospect(s)](#backing-up-your-prospects)
+    - [Restoring](#restoring)
+    - [Container Environment Variables](#container-environment-variables)
+      - [Container Options](#container-options)
+      - [Icarus Dedicated Server Options](#icarus-dedicated-server-options)
 
 ## Preamble
 
 Because I hate running containers as root I created a rootless configuration.
 I was inspired on running steamcmd windows servers by the build of nerodon: <https://gitlab.com/fred-beauch/icarus-dedicated-server>
 
-## Build Requires
+## Building a container
+
+Building a contianer should preferable be done on a development system, this way you will not provide tools that can be exploited on the system that will be running the container.  
+Also build as a regular user, that way you ensure that the container accidently requires enhanced privileges.  
+If you must build on the system that is going to run the container, make sure that the account to run the container is a different account than the one used to build the container.  
+
+### Build Requires
 
 - podman latest
+- enough space to build the container
 
-### READ UP ON PODMAN
+#### READ UP ON PODMAN
 
 For podman installation and usage visit <https://podman.io/docs>  
 For rootless containers you must ensure that subgid en subuid is configured.
 For details on subuid and subgid visit <https://github.com/containers/podman/blob/main/docs/tutorials/rootless_tutorial.md>
 
-## Build Container
+### Build Container
 
 We need ```--cap-add``` to build the container as a regular user, the running container will not need any additional caps.  
 Also required is ```--device /dev/fuse``` when building as a regular user.  
 To minimize the image size I add ```--squash-all``` to remove all the layers.  
-On fedora ```--security-opt=label=type:container_runtime_t``` is also required to allow building.  
+The ```-t example.registry.com:9999/library/icarus-dedicated-server:latest``` applies the tag to container when it is build.
+On rocky/fedora ```--security-opt=label=type:container_runtime_t``` is also required to allow building.  
 
 As a regular user, to build issue the following command:
 
@@ -58,11 +68,13 @@ As a regular user, to build issue the following command:
 podman build -t example.registry.com:9999/library/icarus-dedicated-server:latest -f Dockerfile --cap-add=all --security-opt=label=type:container_runtime_t --device /dev/fuse --squash-all
 ```
 
-## Container requirements
+## Running the rootless container
+
+### Container requirements
 
 Enough space in the home directory of the user running the pod
 
-### Create a regular user
+#### Create a regular user
 
 On your linux system as root create a regular user.  
 The userid (UID) and the groupid (GID) are not important as we run a rootless container.  
@@ -79,7 +91,7 @@ useradd -m steam
 passwd steam
 ```
 
-### Created persistend storage folders
+#### Created persistend storage folders
 
 Since the container is ephemeral (ie all the savegame and server data in it will be gone when it shuts down) you must create persistent storage to be used as a savegame location and server data location.  
 The simplest way to do this is by creating 2 directories and mounting these as a volume in the container.
@@ -92,7 +104,7 @@ mkdir /path/to/steam /path/to/game
 
 These will be mounted as volumes when the container is started
 
-### Podman unshare
+#### Podman unshare
 
 Because rootless containers run in a different namespace the user in the container has no access to the host filesystem.
 To enable access we must change the owner of the folders using 'podman unshare chown'.
@@ -116,9 +128,9 @@ The user in the container is now owner of those directories and can read and wri
 >- first as root recursivly change the owner back to the regular user  
 >- then as the regular user unshare them again with the above commands
 
-## Manual container stopping and starting
+### Manual container stopping and starting
 
-### Starting with podman compose
+#### Starting with podman compose
 
 The best way to start the container is by using compose.
 That way the configuration is always the same and easy to check/debug.
@@ -130,7 +142,7 @@ To ensure the command runs in the background I add the option ```-d```.
 podman compose -f /path/to/compose.ymls up -d
 ```
 
-### Stopping with podman compose
+#### Stopping with podman compose
 
 As the steam user run the following command to stop the server.
 
@@ -138,7 +150,7 @@ As the steam user run the following command to stop the server.
 podman compose -f /path/to/compose.ymls down
 ```
 
-## Automatic container stopping and starting
+### Automatic container stopping and starting
 
 This requires the following steps.
 
@@ -148,7 +160,7 @@ This requires the following steps.
 - [Enable linger for the user](#enable-linger)
 - [Start unit file as the steam user](#manual-start-the-container)
 
-### Add unit file
+#### Add unit file
 
 Systemd needs a unit file to autostart a container.  
 The unit file for a container is called a quadlet, it has a lot of similarities with a docker-compose file.  
@@ -162,7 +174,7 @@ cp icarus.container $HOME/.config/container/systemd
 
 >Make sure there is a game and steam folder in the user home dir
 
-### Update the systemd unit files
+#### Update the systemd unit files
 
 Systemd needs to be made aware of the new unit files.
 This can be done by issueing the following command as the steam user.
@@ -171,12 +183,12 @@ This can be done by issueing the following command as the steam user.
 systemctl --user daemon-reload
 ```
 
-### Enable the unit file
+#### Enable the unit file
 
 The container will be enabled automatically for the user by the ```systemctl --user daemon-reload``` command.
 This section is here to make it clear that it's not longer needed to do this for container unit files for rootless containers.
 
-## Enable linger
+### Enable linger
 
 To allow the container to run even when not logged in you must enable linger for the regular user account.  
 If you do not enable linger the container will be shut down as soon as you log out.  
@@ -189,7 +201,7 @@ loginctl enable-linger steam
 
 After issueing this command systemd will automatically start the container after a reboot if the unit file is in the ~/.config/container/systemd directory.
 
-### Disable linger
+#### Disable linger
 
 If you need to disable linger issue the following command as root.
 
@@ -197,7 +209,7 @@ If you need to disable linger issue the following command as root.
 loginctl disable-linger steam
 ```
 
-### Manual start the container
+#### Manual start the container
 
 As the steam user
 
@@ -205,7 +217,7 @@ As the steam user
 systemctl --user start icarus.container
 ```
 
-## Check the container logs
+### Check the container logs
 
 To read the logs of the container is the following command as the user:
 
@@ -215,7 +227,7 @@ podman logs -f icarus-dedicated-server
 
 The ```-f``` causes the command to 'tail' the logs, use ctrl-c to stop tailing the logs.
 
-### Icarus Logs
+#### Icarus Logs
 
 To read all the ingame logs issue the following command as the regular user:
 
@@ -225,11 +237,11 @@ tail -f $HOME/game/drive_c/icarus/Saved/Logs/Icarus.log
 
 This command assumes you have the $HOME/game on the container host mounted in the container on /home/steam/game.
 
-## Commands you might also use
+### Commands you might also use
 
 Some more commands that you might wish to use but that are no needed to get the container automatically started.
 
-### Stopping the container
+#### Stopping the container
 
 As steam user stop the container
 
@@ -237,7 +249,7 @@ As steam user stop the container
 systemctl --user stop icarus.container
 ```
 
-### Security hardened user option
+#### Security hardened user option
 
 This is optional!!  
 You could make the steam user more secure if you do the following,
@@ -296,7 +308,7 @@ Files/dirs that are needed by the container:
 - game  # or whatever you set this to
 - steam # or whatever you set this to
 
-## Backing up your prospect(s)
+### Backing up your prospect(s)
 
 As root on the container host (replace steam with the regular user you created):
 
@@ -304,7 +316,7 @@ As root on the container host (replace steam with the regular user you created):
 tar -cJvf /backup_folder/prospects.tar.xz /home/steam/game/drive_c/icarus/Saved/PlayerData/DedicatedServer/Prospects
 ```
 
-## Restoring
+### Restoring
 
 As root on the container host (replace steam with the regular user you created):
 
@@ -321,12 +333,12 @@ As the regular user unshare the folders again:
 podman unshare chown -R 1001:1001 game steam
 ```
 
-## Container Environment Variables
+### Container Environment Variables
 
 The only option you realy need to set is the admin password.  
 Defaults will be applied where needed.
 
-### Container Options
+#### Container Options
 
 BRANCH=public  
 STEAM_USER=steam  
@@ -340,7 +352,7 @@ STEAM_GAME_DIR=/home/steam/game
 WINEPREFIX=$STEAM_GAME_DIR  
 WINEARCH=win64  
 
-### Icarus Dedicated Server Options
+#### Icarus Dedicated Server Options
 
 ADMIN_PASSWORD=""  
 ALLOW_NON_ADMINS_LAUNCH=""  
