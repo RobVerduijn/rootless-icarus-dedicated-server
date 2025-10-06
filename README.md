@@ -33,7 +33,7 @@
 ## Preamble
 
 Because I hate running containers as root I created a rootless configuration.
-I was inspired on running steamcmd windows servers by the build of nerondon
+I was inspired on running steamcmd windows servers by the build of nerodon: <https://gitlab.com/fred-beauch/icarus-dedicated-server>
 
 ## Build Requires
 
@@ -323,7 +323,7 @@ podman unshare chown -R 1001:1001 game steam
 
 ## Container Environment Variables
 
-The only option you realy need to set is the admin password.
+The only option you realy need to set is the admin password.  
 Defaults will be applied where needed.
 
 ### Container Options
