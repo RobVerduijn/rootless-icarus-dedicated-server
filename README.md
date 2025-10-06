@@ -56,7 +56,7 @@ For details on subuid and subgid visit <https://github.com/containers/podman/blo
 
 ### Build Container
 
-We need ```--cap-add``` to build the container as a regular user, the running container will not need any additional caps.  
+We need ```--cap-add``` to build the container as a regular user, the container image will not use any caps when it's running.
 Also required is ```--device /dev/fuse``` when building as a regular user.  
 To minimize the image size I add ```--squash-all``` to remove all the layers.  
 The ```-t example.registry.com:9999/library/icarus-dedicated-server:latest``` applies the tag to container when it is build.
