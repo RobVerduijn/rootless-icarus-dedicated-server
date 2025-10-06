@@ -1,0 +1,33 @@
+name: icarus-dedicated-server
+services:
+  icarus:
+    container_name: icarus-dedicated-server
+    # change this to whatever you use as a registry
+    image: registry.example.com:9999/library/icarus-dedicated-server:1.1
+    restart: "unless-stopped"
+    pull_policy: always
+    ports:
+      - 17777:17777/udp
+      - 27015:27015/udp
+    volumes:
+      - /home/steam/steam:/home/steam/Steam:Z
+      - /home/steam/game:/home/steam/game:Z
+    environment:
+      - RESUME_PROSPECT=false
+      - SERVERNAME='Icarus Dedicated Server'
+      - SHUTDOWN_NOT_JOINED_FOR=40
+      - SHUTDOWN_EMPTY_FOR=30
+      - BRANCH=public
+      - PORT=17777
+      - QUERYPORT=27015
+      - JOIN_PASSWORD=changeme
+      - ADMIN_PASSWORD=changeme
+      - GAMESAVEFREQUENCY=10
+
+# The user running this container is arbitrary
+# The user must exist on the container host and have rw access to the source paths.
+# In the volumes section, the source path is left of the colon ':'
+# The right side is the path in the container, changing that will likely break this build.
+# My total lack of creativity made me choose steam as the user on the container host.
+# The source path </home/steam/steam> and  must exist on the container host
+# The source path </home/steam/game> and  must exist on the container host

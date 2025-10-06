@@ -1,0 +1,38 @@
+# Icarus container unit file
+# should be placed in $HOME/.config/containers/systemd/icarus.container
+# Then issue as the user:
+#    systemctl --user daemon-reload
+#    systemctl --user start icarus
+[Unit]
+Description=Icarus Dedicated Server
+After=network-online.target
+
+[Service]
+Restart=always
+
+[Container]
+ContainerName=icarus-dedicated-Server
+
+Image=registry.example.com:9999/library/icarus-dedicated-server:latest
+Pull=always
+
+# %h will resolve to the container host user home
+Volume=%h/steam:/home/steam/steam:Z
+Volume=%h/game:/home/steam/game:Z
+
+PublishPort=17777:17777/udp
+PublishPort=27015:27015/udp
+
+Environment=RESUME_PROSPECT=false
+Environment=SERVERNAME=My Dedicated Server
+Environment=SHUTDOWN_NOT_JOINED_FOR=40
+Environment=SHUTDOWN_EMPTY_FOR=30
+Environment=BRANCH=public
+Environment=PORT=17777
+Environment=QUERYPORT=27015
+Environment=JOIN_PASSWORD=ChangeMe
+Environment=ADMIN_PASSWORD=ChangeMeToNotTheSameAsJoinPassword
+Environment=GAMESAVEFREQUENCY=5
+
+[Install]
+WantedBy=multi-user.target default.target
