@@ -23,6 +23,7 @@
       - [Manual start the container](#manual-start-the-container)
     - [Check the container logs](#check-the-container-logs)
       - [Icarus Logs](#icarus-logs)
+    - [Open firewalld ports](#open-firewalld-ports)
     - [Commands you might also use](#commands-you-might-also-use)
       - [Stopping the container](#stopping-the-container)
       - [Security hardened user option](#security-hardened-user-option)
@@ -236,6 +237,32 @@ tail -f $HOME/game/drive_c/icarus/Saved/Logs/Icarus.log
 ```
 
 This command assumes you have the $HOME/game on the container host mounted in the container on /home/steam/game.
+
+### Open firewalld ports
+
+To open the ports in firewalld during runtime:
+
+```bash
+firewall-cmd --add-port=17777/udp --add-port=27015/udp
+```
+
+To open the ports in firewalld on startup
+
+```bash
+firewall-cmd --add-port=17777/udp --add-port=27015/udp --permanent
+```
+
+To close the ports in firewalld during runtime:
+
+```bash
+firewall-cmd --remove-port=17777/udp --remove-port=27015/udp
+```
+
+To close the ports in firewalld on startup
+
+```bash
+firewall-cmd --remove-port=17777/udp --remove-port=27015/udp --permanent
+```
 
 ### Commands you might also use
 
