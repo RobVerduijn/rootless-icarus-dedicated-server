@@ -165,12 +165,12 @@ This requires the following steps.
 
 Systemd needs a unit file to autostart a container.  
 The unit file for a container is called a quadlet, it has a lot of similarities with a docker-compose file.  
-For a regular user it needs to be located in the home directory of the user in the ```.config/container/systemd``` directory.  
+For a regular user it needs to be located in the home directory of the user in the ```.config/containers/systemd``` directory.  
 I've added a quadlet unit file that can be used for this: **icarus.container**
 
 ```bash
-mkdir -p $HOME/.config/container/systemd
-cp icarus.container $HOME/.config/container/systemd
+mkdir -p $HOME/.config/containers/systemd
+cp icarus.container $HOME/.config/containers/systemd
 ```
 
 >Make sure there is a game and steam folder in the user home dir

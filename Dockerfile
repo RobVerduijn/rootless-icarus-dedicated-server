@@ -5,7 +5,7 @@
 # LTS is for physical and virtual systems that exist for prolonged times,
 # containers are short lived and easely re-created from scratch.
 # And if containers fail, we can simply revert to the old image or fix the new build.
-FROM ubuntu:25.04
+FROM ubuntu:25.10
 
 # These environment vars MUST be set or the container won't work
 #   The steam user only exists in the container, no need to create it on the host
@@ -68,6 +68,7 @@ RUN <<EOF
   # lib32gcc-s1 ca-certificates and curl are required for steamcmd
   # wine wine64 are required to run a windows based server
   apt-get update
+  apt-get upgrade -y --no-install-recommends --no-install-suggests
   apt-get install -y --no-install-recommends --no-install-suggests \
     ca-certificates \
     curl \
