@@ -62,6 +62,26 @@ function server_config () {
     echo "GameSaveFrequency default set to: ${GAMESAVEFREQUENCY:=10.000000}"
   fi
 
+  if [ -z "$MAX_PLAYERS" ] ; then
+    echo "FiberFoliageRespawn default set to: ${MAX_PLAYERS:=8}"
+  fi
+
+  if [ -z "$ALLOW_NON_ADMINS_LAUNCH" ] ; then
+    echo "AllowNonAdminsToLaunchProspects default set to: ${ALLOW_NON_ADMINS_LAUNCH:=false}"
+  fi
+
+  if [ -z "$ALLOW_NON_ADMINS_DELETE" ] ; then
+    echo "AllowNonAdminsToDeleteProspects default set to: ${ALLOW_NON_ADMINS_DELETE:=false}"
+  fi
+
+  if [ -z "$FIBERFOLIAGERESPAWN" ] ; then
+    echo "FiberFoliageRespawn default set to: ${FIBERFOLIAGERESPAWN:=true}"
+  fi
+
+  if [ -z "$LARGESTONERESPAWN" ] ; then
+    echo "LargeStonesRespawn default set to: ${LARGESTONERESPAWN:=true}"
+  fi
+
   # Here's what we are going to configure
   echo "============================================================="
   echo "Configuring ${SERVERNAME:-Icarus Dedicated Server} with the following config"
@@ -83,7 +103,7 @@ function server_config () {
   echo "AllowNonAdminsToLaunchProspects=${ALLOW_NON_ADMINS_LAUNCH}"
   echo "AllowNonAdminsToDeleteProspects=${ALLOW_NON_ADMINS_DELETE}"
   echo "FiberFoliageRespawn=${FIBERFOLIAGERESPAWN}"
-  echo "LargeStonesRespawn=${FIBERFOLIAGERESPAWN}"
+  echo "LargeStonesRespawn=${LARGESTONERESPAWN}"
   echo "GameSaveFrequency=${GAMESAVEFREQUENCY}"
   echo "SaveGameOnExit=${SAVEGAMEONEXIT}"
   echo ""
@@ -146,6 +166,7 @@ function rungame () {
   echo Find your server logs here: game/drive_c/icarus/Saved/Logs
   echo ==============================================================
   wine $STEAM_GAME_DIR/Icarus/Binaries/Win64/IcarusServer-Win64-Shipping.exe \
+    -Log \
     -UserDir='C:\icarus' \
     -SteamServerName="${SERVERNAME:-Icarus Dedicated Server}" \
     -PORT="${PORT:-17777}" \
