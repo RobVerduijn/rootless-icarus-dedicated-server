@@ -3,36 +3,26 @@
 # Then issue as the user:
 #    systemctl --user daemon-reload
 #    systemctl --user start icarus
+
 [Unit]
 Description=Icarus Dedicated Server
 After=network-online.target
 
-[Service]
-Restart=always
-
 [Container]
-ContainerName=icarus-dedicated-Server
-
-Image=registry.example.com:9999/library/icarus-dedicated-server:latest
+Image=registry.example.coms:9999/library/icarus-dedicated-server:latest
 Pull=always
-
-# %h will resolve to the container host user home
-Volume=%h/steam:/home/steam/steam:Z
-Volume=%h/game:/home/steam/game:Z
-
+ContainerName=icarus-dedicated-server
 PublishPort=17777:17777/udp
 PublishPort=27015:27015/udp
+# .volume automatically creates the volume if it does not exist
+Volume=%h/game:/home/steam/icarus-server:Z
+# Optional: Uncomment and configure if opting into a Steam beta branch
+# Environment=STEAM_BETA_BRANCH=experimental
+EnvironmentFile=icarus.env
 
-Environment=RESUME_PROSPECT=false
-Environment=SERVERNAME=My Dedicated Server
-Environment=SHUTDOWN_NOT_JOINED_FOR=40
-Environment=SHUTDOWN_EMPTY_FOR=30
-Environment=BRANCH=public
-Environment=PORT=17777
-Environment=QUERYPORT=27015
-Environment=JOIN_PASSWORD=ChangeMe
-Environment=ADMIN_PASSWORD=ChangeMeToNotTheSameAsJoinPassword
-Environment=GAMESAVEFREQUENCY=5
+[Service]
+Restart=always
+TimeoutStartSec=600
 
 [Install]
-WantedBy=multi-user.target default.target
+WantedBy=default.target
