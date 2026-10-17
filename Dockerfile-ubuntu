@@ -107,6 +107,10 @@ RUN <<EOF
   rm -rf /usr/share/wine/gecko
   rm -rf /usr/share/wine/mono
   rm -rf /usr/include/wine
+  rm -rf /usr/share/fonts /usr/share/fontconfig
+  rm -rf /usr/share/icons /usr/share/pixmaps /usr/share/glib-2.0
+
+  find /usr/lib/x86_64-linux-gnu -name "*.so*" -exec strip --strip-unneeded {} + 2>/dev/null || true
 
   # clean up to reduce image size
   apt-get clean -y

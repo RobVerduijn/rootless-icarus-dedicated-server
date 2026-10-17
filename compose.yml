@@ -2,7 +2,7 @@ services:
   icarus:
     container_name: icarus-dedicated-server
     image: registry.example.com:9999/library/icarus-dedicated-server:1.20
-    download_policy: always
+    pull_policy: always
     restart: "unless-stopped"
     ports:
       - 17777:17777/udp

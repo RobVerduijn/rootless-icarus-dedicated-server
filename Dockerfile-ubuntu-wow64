@@ -88,10 +88,40 @@ RUN <<EOF
   # create steam user and group in the container
   useradd -ms /bin/bash steam
 
+  # Delete unnecessary binaries/docs/man to reduce image size
+  rm -rf /usr/share/man /usr/share/doc /usr/share/info /usr/share/lintian /usr/share/locale/*
+
+  for bin in wineconsole wineboot winecfg winefile winemine notepad regedit wordpad msiexec winedbg view uninstaller; do
+    rm -f "/usr/bin/$bin" "/usr/lib/wine/$bin" "/usr/lib/wine/x86_64-unix/$bin.so"
+  done
+
+  # Remove non-essential EXE/DLL Windows executables from Wine's fake system dir
+  # (Audio, printing, joystick, web rendering, debugger stubs)
+  find /usr/lib/x86_64-linux-gnu/wine/ -type f \( \
+      -name "*winealsa*.so*" -o \
+      -name "*winepulse*.so*" -o \
+      -name "*winecoreaudio*.so*" -o \
+      -name "*winemapi*.dll*" -o \
+      -name "*wineps*.dll*" -o \
+      -name "*vulkan*.dll*" -o \
+      -name "*glu32*.dll*" -o \
+      -name "*mshtml*.dll*" -o \
+      -name "*jscript*.dll*" -o \
+      -name "*wscript*.exe*" -o \
+      -name "*cscript*.exe*" -o \
+      -name "*notepad*.exe*" -o \
+      -name "*wordpad*.exe*" -o \
+      -name "*winemine*.exe*" \
+  \) -delete || true
+
+  rm -rf /usr/share/man/man1/wine*.1.gz
+  rm -rf /usr/share/wine/gecko
+  rm -rf /usr/share/wine/mono
+  rm -rf /usr/include/wine
+
   # clean up to reduce image size
   apt-get clean -y
   rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/*
-  rm -rf /usr/share/man /usr/share/doc /usr/share/info /usr/share/lintian /usr/share/locale/*
   rm /var/{log,cache,lib}/* -rf
 
 EOF
