@@ -57,6 +57,13 @@ load_config_defaults() {
     )
 }
 
+init_steamcmd() {
+    echo "Installing steamcmd"
+    if [ ! -f "$HOME/steamcmd/steamcmd.sh" ]; then
+        curl -sSL "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz" | tar -xz -C "$STEAMCMD_DIR"
+    fi
+}
+
 update_server() {
     echo "--> Preparing SteamCMD update..."
     local steam_args="+@sSteamCmdForcePlatformType windows +force_install_dir ${INSTALL_DIR} +login anonymous"
