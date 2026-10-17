@@ -27,6 +27,7 @@ ENV STEAM_CMD_URL=https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linu
 ENV STEAM_GAME_DIR=/home/$STEAM_USER/game
 ENV WINEPREFIX=$STEAM_GAME_DIR
 ENV WINEARCH=win64
+ENV STEAM_ASYNC_TIMEOUT=60
 
 # Summarizing the environment vars for reference use.
 # Defaults will be set by the runicarus.sh script if they are needed.
