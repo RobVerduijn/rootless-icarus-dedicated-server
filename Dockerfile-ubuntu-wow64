@@ -105,9 +105,6 @@ WORKDIR /home/steam
 # Create required directories
 RUN mkdir -p /home/steam/steamcmd /home/steam/icarus-server /home/steam/.wine
 
-# Fetch Linux SteamCMD
-RUN curl -sSL "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz" | tar -xz -C /home/steam/steamcmd
-
 # Copy startup entrypoint and ensure it is executable
 COPY --chown=steam:steam runsteamcmd.sh /home/steam/runsteamcmd.sh
 RUN chmod +x /home/steam/runsteamcmd.sh
