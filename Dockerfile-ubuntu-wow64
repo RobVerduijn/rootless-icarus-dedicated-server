@@ -59,7 +59,7 @@ RUN <<EOF
   # sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
   # dpkg-reconfigure --frontend=noninteractive locales
 
-  # lib32gcc-s1 ca-certificates and curl are required for steamcmd
+  # lib32gcc-s1 ca-certificates wget and curl are required for steamcmd
   # wine wine64 are required to run a windows based server
   apt-get update
   apt-get upgrade -y --no-install-recommends --no-install-suggests
@@ -90,6 +90,8 @@ RUN <<EOF
 
   # clean up to reduce image size
   apt-get clean -y
+  rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/*
+  rm -rf /usr/share/man /usr/share/doc /usr/share/info /usr/share/lintian /usr/share/locale/*
   rm /var/{log,cache,lib}/* -rf
 
 EOF

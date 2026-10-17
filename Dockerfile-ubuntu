@@ -5,7 +5,7 @@
 # LTS is for physical and virtual systems that exist for prolonged times,
 # containers are short lived and easely re-created from scratch.
 # And if containers fail, we can simply revert to the old image or fix the new build.
-FROM ubuntu:26.04
+FROM ubuntu:26.10
 
 # These environment vars MUST be set or the container won't work
 #   The steam user only exists in the container, no need to create it on the host
@@ -16,41 +16,32 @@ FROM ubuntu:26.04
 # It only exists in the container, on the container host it will be assigned a random UID/GID without any privileges.
 #
 
-ENV BRANCH=public
-ENV STEAM_USER=steam
-ENV STEAM_GROUP=$STEAM_USER
-ENV STEAM_USER_UID=1001
-ENV STEAM_USER_GID=1001
-ENV STEAM_CMD_DIR=/home/$STEAM_USER/Steam
-ENV STEAM_CMD=$STEAM_CMD_DIR/steamcmd.sh
-ENV STEAM_CMD_URL=https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz
-ENV STEAM_GAME_DIR=/home/$STEAM_USER/game
-ENV WINEPREFIX=$STEAM_GAME_DIR
-ENV WINEARCH=win64
-ENV STEAM_ASYNC_TIMEOUT=60
+# The steam app id,install dir for the dedicated server, and the branch (default empty)
+ENV APP_ID=2089300
+ENV DIR_NAME="icarus-server"
+ENV STEAM_BETA_BRANCH=""
 
+# see https://github.com/RocketWerkz/IcarusDedicatedServer/wiki/Server-Config-&-Launch-Parameters
 # Summarizing the environment vars for reference use.
 # Defaults will be set by the runicarus.sh script if they are needed.
-ENV ADMIN_PASSWORD=""
-ENV ALLOW_NON_ADMINS_LAUNCH=""
-ENV ALLOW_NON_ADMINS_DELETE=""
-ENV CREATE_PROSPECT=""
+ENV SESSIONNAME=""
+ENV JOINPASSWORD=""
+ENV MAXPLAYERS=""
+ENV ADMINPASSWORD=""
+ENV RESUMEPROSPECT=""
+ENV LASTPROSPECTNAME=""
+ENV LOADPROSPECT=""
+ENV CREATEPROSPECT=""
+ENV SHUTDOWNNOTJOINEDFOR=""
+ENV SHUTDOWNEMPTYFOR=""
+ENV ALLOWNONADMINSLAUNCH=""
+ENV ALLOWNONADMINSDELETE=""
+ENV FIBERFOLIAGERESPAWN=""
 ENV GAMESAVEFREQUENCY=""
-ENV JOIN_PASSWORD=""
-ENV LOAD_PROSPECT=""
-ENV MAX_PLAYERS=""
-ENV SHUTDOWN_NOT_JOINED_FOR=""
-ENV SHUTDOWN_EMPTY_FOR=""
+ENV LARGESTONERESPAWN=""
+ENV SAVEGAMEONEXIT=""
 ENV PORT=""
 ENV QUERYPORT=""
-ENV RESUME_PROSPECT=""
-ENV SAVEGAMEONEXIT=""
-ENV SERVERNAME=""
-ENV FIBERFOLIAGERESPAWN=""
-ENV LARGESTONERESPAWN=""
-ENV GAMESAVEFREQUENCY=""
-ENV SAVEGAMEONEXIT=""
-
 
 # Using heredoc reduces the need for RUN entries thus creating less layers which results in smaller images
 # It also makes the script more readable
@@ -78,21 +69,19 @@ RUN <<EOF
     wine \
     wine64
 
-    # wine64-preloader
-    # winbind
-
-  # Remove ubuntu user added by default
+  # Remove ubuntu user added as default
   touch /var/mail/ubuntu
   chown ubuntu /var/mail/ubuntu
   userdel -r ubuntu
 
   # create steam user and group in the container
-  groupadd -g $STEAM_USER_GID $STEAM_GROUP
-  useradd -m -u $STEAM_USER_UID -g $STEAM_USER_GID $STEAM_USER
+  useradd -ms /bin/bash steam
 
   # clean up to reduce image size
   apt-get clean -y
   rm /var/{log,cache,lib}/* -rf
+  rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/*
+  rm -rf /usr/share/man /usr/share/doc /usr/share/info /usr/share/lintian /usr/share/locale/*
 EOF
 
 # now switch from root to the steam user
@@ -108,7 +97,7 @@ COPY runicarus.sh .
 ENTRYPOINT ["/bin/bash"]
 
 # Run script by default on launch
-CMD ["/home/steam/runicarus.sh"]
+CMD ["/home/steam/runsteamcmd.sh"]
 
 # Add the squash option when building the container to reduce it's size even more.
 # Modify the compose.yml/icarus.container to match your container host setup
