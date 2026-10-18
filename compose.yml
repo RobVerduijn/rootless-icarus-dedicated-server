@@ -1,14 +1,14 @@
 services:
   icarus:
     container_name: icarus-dedicated-server
-    image: registry.example.com:9999/library/icarus-dedicated-server:1.20
+    image: registry.example.com:9999/library/icarus-dedicated-server:latest
     pull_policy: always
     restart: "unless-stopped"
     ports:
       - 17777:17777/udp
       - 27015:27015/udp
     volumes:
-      - /home/steam/game:/home/steam/icarus-server:Z
+      - /home/<username>/game:/home/steam/server:Z
     environment:
       - SESSIONNAME=MY ICARUS SERVER
       - SHUTDOWNNOTJOINEDFOR=40
@@ -18,3 +18,4 @@ services:
       - ALLOWNONADMINSLAUNCH=true
       - PORT=17777
       - QUERYPORT=27015
+      - DEBUG=1
