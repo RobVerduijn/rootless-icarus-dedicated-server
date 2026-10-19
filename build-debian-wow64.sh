@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-IMAGE_NAME="registry.example.com:9999/library/icarus-dedicated-server"
-IMAGE_TAG="latest"
+IMAGE_NAME="registry.tjako.thuis:9999/library/icarus-dedicated-server"
+IMAGE_TAG="1.22"
 APP_ID="2089300"
 
 container=$(buildah from debian:trixie-slim)
@@ -75,9 +75,10 @@ buildah config --env SAVEGAMEONEXIT="" "$container"
 buildah config --env PORT="" "$container"
 buildah config --env QUERYPORT="" "$container"
 
-buildah copy "$container" entrypoint_steamcmd-wow64.sh /home/steam/entrypoint_steamcmd-wow64.sh
-buildah config --entrypoint '["/bin/bash", "/home/steam/entrypoint_steamcmd-wow64.sh"]' "$container"
+buildah copy "$container" runsteamcmd.sh /home/steam/runsteamcmd.sh
+buildah config --entrypoint '["/bin/bash", "/home/steam/runsteamcmd.sh"]' "$container"
 
 # Commit the container as a single flattened image layer
 buildah commit "$container" "${IMAGE_NAME}:${IMAGE_TAG}"
+if [ ${IMAGE_TAG} -ne latest ] ; then buildah commit "$container" "${IMAGE_NAME}:latest" ; fi
 buildah rm "$container"
