@@ -18,7 +18,19 @@ PublishPort=27015:27015/udp
 Volume=%h/game:/home/steam/icarus-server:Z
 # Optional: Uncomment and configure if opting into a Steam beta branch
 # Environment=STEAM_BETA_BRANCH=experimental
+# If there is whitespace in a value quote it like the sessionname
 EnvironmentFile=icarus.env
+Environment=RESUME_PROSPECT=false
+Environment="SESSIONNAME=MY ICARUS SERVER"
+Environment=SHUTDOWNNOTJOINEDFOR=40
+Environment=SHUTDOWNEMPTYFOR=30
+Environment=JOINPASSWORD=mysecret
+Environment=ADMINPASSWORD=mysecret2
+Environment=GAMESAVEFREQUENCY=5
+Environment=MAXPLAYERS=4
+Environment=ALLOWNONADMINSLAUNCH=true
+Environment=PORT=17777
+Environment=QUERYPORT=27015
 
 [Service]
 Restart=always

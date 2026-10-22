@@ -79,6 +79,6 @@ buildah copy "$container" runsteamcmd.sh /home/steam/runsteamcmd.sh
 buildah config --entrypoint '["/bin/bash", "/home/steam/runsteamcmd.sh"]' "$container"
 
 # Commit the container as a single flattened image layer
-buildah commit "$container" "${IMAGE_NAME}:${IMAGE_TAG}"
-if [ ${IMAGE_TAG} -ne latest ] ; then buildah commit "$container" "${IMAGE_NAME}:latest" ; fi
+buildah commit --squash "$container" "${IMAGE_NAME}:${IMAGE_TAG}"
+if [ "${IMAGE_TAG}" != "latest" ] ; then buildah tag "${IMAGE_NAME}:${IMAGE_TAG}" "${IMAGE_NAME}:latest" ; fi
 buildah rm "$container"

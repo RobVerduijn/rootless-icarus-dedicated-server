@@ -18,47 +18,28 @@ load_config_defaults() {
   # If you neglect to set the admin password you will regret it sooner or later
   # Using urandom to generate a random 32 character string if the password is empty
 
-  echo "--> Setting configuration defaults"
-
-  local SessionName=${SESSIONNAME:=Icarus Dedicated Server}
-  local JoinPassword=${JOINPASSWORD:=''}
-  local MaxPlayers=${MAXPLAYERS:=8}
-  local AdminPassword=${ADMINPASSWORD:=$(tr -dc 'a-zA-Z0-9' < /dev/urandom | head -c 32)}
-  local ResumeProspect=${RESUMEPROSPECT:=''}
-  local LastProspectName=${LASTPROSPECTNAME:=''}
-  local LoadProspect=${LOADPROSPECT:=''}
-  local CreateProspect=${CREATEPROSPECT:=''}
-  local ShutdownIfNotJoinedFor=${SHUTDOWNNOTJOINEDFOR:=40.000000}
-  local ShutdownIfEmptyFor=${SHUTDOWNEMPTYFOR:=30.000000}
-  local AllowNonAdminsToLaunchProspects=${ALLOWNONADMINSLAUNCH:=true}
-  local AllowNonAdminsToDeleteProspects=${ALLOWNONADMINSDELETE:=false}
-  local FiberFoliageRespawn=${FIBERFOLIAGERESPAWN:=true}
-  local GameSaveFrequency=${GAMESAVEFREQUENCY:=10.000000}
-  local LargeStonesRespawn=${LARGESTONERESPAWN:=true}
-  local SaveGameOnExit=${SAVEGAMEONEXIT:=true}
-  local Port=${PORT:=17777}
-  local QueryPort=${QUERYPORT:=27015}
+  echo "--> Setting configuration defaults where needed"
 
   local ServerSettings=/home/steam/server/Icarus/Saved/Config/WindowsServer/ServerSettings.ini
   local Engine=/home/steam/server/Icarus/Saved/Config/WindowsServer/Engine.ini
 
   CONFIG_ITEMS=(
-    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|SessionName|${SessionName}|Sets the session name in the server browser"
-    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|JoinPassword|${JoinPassword}|Password required to join the server. Leave empty to not use a password"
-    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|MaxPlayers|${MaxPlayers}|Max Players that can be on the server at once. Minimum 1, Maximum 8"
-    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|AdminPassword|${AdminPassword}|Password required for using admin RCON commands"
-    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|ResumeProspect|${ResumeProspect}|If true, automatically resume the last prospect on startup"
-    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|LastProspectName|${LastProspectName}|The last prospect that was run on the server. Used by ResumeProspect"
-    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|LoadProspect|${LoadProspect}|Prospect name to load on startup"
-    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|CreateProspect|${CreateProspect}|Create and launch a prospect on start up"
-    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|ShutdownIfNotJoinedFor|${ShutdownIfNotJoinedFor}|When the server starts up, if no players join within this time, the server will shutdown and return to lobby."
-    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|ShutdownIfEmptyFor|${ShutdownIfEmptyFor}|When the server becomes empty the server will shutdown and return to lobby after this time (in seconds)."
-    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|AllowNonAdminsToLaunchProspects|${AllowNonAdminsToLaunchProspects}|If true, automatically resume the last prospect on startup"
-    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|AllowNonAdminsToDeleteProspects|${AllowNonAdminsToDeleteProspects}|If true, automatically resume the last prospect on startup"
-    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|FiberFoliageRespawn|${FiberFoliageRespawn}|If true, (open world only) fibrous plants respawn during load"
-    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|LargeStonesRespawn|${LargeStonesRespawn}|If true, (open world only) large stones respawn during load"
-    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|GameSaveFrequency|${GameSaveFrequency}|After this time the game will automatically saved (in minutes)"
-    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|LastProspectName|${LastProspectName}|The name of the last prospect session"
+    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|SessionName|${SESSIONNAME:=Icarus Dedicated Server}|Sets the session name in the server browser"
+    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|JoinPassword|${JOINPASSWORD:=''}|Password required to join the server. Leave empty to not use a password"
+    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|MaxPlayers|${MAXPLAYERS:=8}|Max Players that can be on the server at once. Minimum 1, Maximum 8"
+    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|AdminPassword|${ADMINPASSWORD:=$(tr -dc 'a-zA-Z0-9' < /dev/urandom | head -c 32)}|Password required for using admin RCON commands"
+    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|ResumeProspect|${RESUMEPROSPECT:=false}|If true, automatically resume the last prospect on startup"
+    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|LastProspectName|${LASTPROSPECTNAME:=''}|The last prospect that was run on the server. Used by ResumeProspect"
+    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|LoadProspect|${LOADPROSPECT:=''}|Prospect name to load on startup"
+    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|CreateProspect|${CREATEPROSPECT:=''}|Create and launch a prospect on start up"
+    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|ShutdownIfNotJoinedFor|${SHUTDOWNNOTJOINEDFOR:=40.000000}|When the server starts up, if no players join within this time, the server will shutdown and return to lobby."
+    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|ShutdownIfEmptyFor|${SHUTDOWNEMPTYFOR:=30.000000}|When the server becomes empty the server will shutdown and return to lobby after this time (in seconds)."
+    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|AllowNonAdminsToLaunchProspects|${ALLOWNONADMINSLAUNCH:=true}|If true, automatically resume the last prospect on startup"
+    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|AllowNonAdminsToDeleteProspects|${ALLOWNONADMINSDELETE:=false}|If true, automatically resume the last prospect on startup"
+    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|FiberFoliageRespawn|${FIBERFOLIAGERESPAWN:=true}|If true, (open world only) fibrous plants respawn during load"
+    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|LargeStonesRespawn|${LARGESTONERESPAWN:=true}|If true, (open world only) large stones respawn during load"
+    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|GameSaveFrequency|${GAMESAVEFREQUENCY:=10.000000}|After this time the game will automatically saved (in minutes)"
+    "$ServerSettings|/Script/Icarus.DedicatedServerSettings|SaveGameOnExit|${SAVEGAMEONEXIT:=true}|Save the game when exiting the server"
     "$Engine|OnlineSubsystemSteam|AsyncTaskTimeout|${ASYNCTASKTIMEOUT:=60}|Give slow systems and connections more time to connect"
   )
 }
@@ -172,7 +153,7 @@ run_steamcmd() {
         return 0
       else
         echo "WARNING: SteamCMD failed with exit code $exit_code. Retrying..."
-        sleep 1
+        sleep 3
         ((attempt++))
       fi
     done
@@ -190,8 +171,7 @@ start_server() {
     -LOG \
     -SteamServerName="${SESSIONNAME}" \
     -PORT="${PORT}" \
-    -QueryPort="${QUERYPORT}" \
-    -MaxSearchResults="4000"
+    -QueryPort="${QUERYPORT}"
 }
 
 main() {
