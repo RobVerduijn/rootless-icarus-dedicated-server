@@ -1,0 +1,18 @@
+for the optimization of icarus in steam
+- the game is published by rocketwerkz
+- video card: NVIDIA Corporation GA106 [GeForce RTX 3060 Lite Hash Rate] (rev a1) with 12288 MB ram
+- cpu: AMD Ryzen 5 3600 6-Core Processor
+- ram: 64Gb
+- os: fedora45
+- steam with proton experimetal
+- current launch options:
+  DXVK_FRAME_RATE=60 VKD3D_CONFIG=nodxr,force_static_cbv %command%
+- explain each current option and evaluate if it is needed
+- suggest possible improvements for the launch options
+- name all the in game video options default settings
+  suggest possible improvements for the in game options
+- check all options for the unreal engine
+- check default proton settings
+- which directx to set
+- specify where an option is documented
+- all document referals must be less than 1 year old
